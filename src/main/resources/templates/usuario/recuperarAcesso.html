@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html xmlns:th="http://thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<head>
+<link rel="icon" th:href=@{favicon.ico} type="image/x-icon" />
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
+<link type="text/css" rel="stylesheet" href="css/materialize.min.css" media="screen,projection" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta charset="ISO-8859-1">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+<title>GrantControl - Recuperar Acesso</title>
+</head>
+<body>	
+<div class="container">
+  <br>
+  <div><i class="material-icons left">person</i><label style="font-size: 12px; font-weight: bold;">Acesse novamente o sistema</label></div>
+  <br><br>
+    <form id="formRecuperar" class="col s12" method="post">
+      <div class="row">
+        <div class="input-field col s6">
+          <input style="font-size: 12px; font-weight: bold;" id="senha" name="senha" type="password" placeholder="Digite sua nova senha" required>
+        </div>
+        <br>
+        <button id="btnEnviar" name="btnEnviar" class="btn waves-effect blue lighten-1 waves-light">Confirmar<i class="material-icons left">save</i></button>
+  	  </div>
+      <div align="center"><strong><label style="color: #b30000;" id="msg" th:text="${msg}"></label></strong></div>
+    </form>
+  </div>
+<script type="text/javascript" src="js/materialize.min.js"></script>
+<script>
+$("#btnEnviar").click(function(){		
+	if($("#senha").val()){	
+		
+		$("#formRecuperar").submit();
+		$("#btnEnviar").prop('disabled', true);
+		$("#btnVoltar").prop('disabled', true);
+		$("#email").prop('disabled', true);
+		$("#msg").hide();
+	
+		}else{
+			alert('Informe a nova senha!')
+			return false;
+		}		
+	}
+});
+</script>
+</body>
+<div th:replace="fragments/footer :: footer">&nbsp;</div>
+</html>

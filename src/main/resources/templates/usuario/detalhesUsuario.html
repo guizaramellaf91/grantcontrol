@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html xmlns:th="http://thymeleaf.org">
+<head>
+    <link rel="icon" th:href=@{favicon.ico} type="image/x-icon"/>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"/>
+    <link type="text/css" rel="stylesheet" href="css/materialize.min.css" media="screen,projection"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <meta charset="ISO-8859-1">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <title>GrantControl - User profile</title>
+</head>
+<div th:replace="fragments/header :: header">&nbsp;</div>
+<body>
+<div class="container">
+    <br>
+    <div>
+        <i class="material-icons left">person</i><label style="font-size: 14px;" th:text="${usuario.nome}"></label>
+    </div>
+    <br>
+    <div>
+        <i class="tiny material-icons left">account_balance_wallet</i>
+        <label style="font-size: 10px;">Last change date: </label>
+        <label style="font-size: 14px; font-weight: bold;"
+               th:text="${usuario.dataAlteracao ne null ? #dates.format(usuario.dataAlteracao, 'dd/MM/yyyy HH:mm') : 'N/A'}"></label>
+    </div>
+    <div>
+        <i class="tiny material-icons left">flag</i>
+        <label style="font-size: 10px;">Number of accesses: </label>
+        <label style="font-size: 14px; font-weight: bold;" th:text="${usuario.acessos}"></label>
+    </div>
+    <div>
+        <i class="tiny material-icons left">access_time</i>
+        <label style="font-size: 10px;">Last access: </label>
+        <label style="font-size: 14px; font-weight: bold;"
+               th:text="${#dates.format(usuario.ultimoAcesso, 'dd/MM/yyyy HH:mm')}"></label>
+    </div>
+    <br>
+    <div>
+        <label>Access level: &nbsp;</label>&nbsp;
+        <label style="font-weight: bold; font-size: 14px;"
+               th:text="${usuario.nivel eq 1 ? 'Administrator' : 'Common User'}"></label>
+    </div>
+    <div>
+        <label>Department: &nbsp;</label>&nbsp;
+        <label style="font-weight: bold; font-size: 14px;" th:text="${usuario.departamento}"></label>
+    </div>
+    <br>
+    <form class="col s12" method="post">
+        <div class="row">
+
+            <input type="hidden" id="usuarioId" th:value="${usuario.usuarioId}">
+
+            <div class="input-field col s6">
+                <input style="font-size: 12px; font-weight: bold;" id="nome" name="nome"
+                       th:disabled="${usuarioLogado.login ne usuario.login}" th:value="${usuario.nome}" type="text"
+                       required>
+                <label style="font-size: 12px;" for="nome">Name</label>
+            </div>
+
+            <div class="input-field col s6">
+                <input style="font-size: 12px; font-weight: bold;" id="login" name="login"
+                       th:disabled="${usuarioLogado.login ne usuario.login}" th:value="${usuario.login}" type="text"
+                       required>
+                <label style="font-size: 12px;" for="login">Username</label>
+            </div>
+
+            <div class="input-field col s2">
+                <div class="switch">
+                    <label><input type="checkbox" id="checkSenha" name="checkSenha" onclick="alterarSenha()"
+                                  th:checked="0" th:disabled="${usuarioLogado.login ne usuario.login}">
+                        <span class="lever"></span>Change Password</label>
+                </div>
+            </div>
+
+            <div class="input-field col s2">
+                <input style="font-size: 12px; font-weight: bold;" id="senha" name="senha" maxlength="15"
+                       th:value="${usuario.senha}" type="password" required disabled>
+                <label style="font-size: 12px;" for="senha">Password</label>
+            </div>
+
+            <div class="input-field col s2">
+                <input style="font-size: 12px; font-weight: bold;" id="senhaConfirma" name="senhaConfirma"
+                       maxlength="15"
+                       th:value="${usuario.senha}" type="password" required disabled>
+                <label style="font-size: 12px;" for="senhaConfirma">Confirm password</label>
+            </div>
+
+            <div class="input-field col s6">
+                <input style="font-size: 12px; font-weight: bold;" id="email" name="email"
+                       th:disabled="${usuarioLogado.login ne usuario.login}" th:value="${usuario.email}" type="email"
+                       required disabled>
+                <label style="font-size: 12px;" for="email">E-mail</label>
+            </div>
+
+            <div class="input-field col s3">
+                <div class="switch">
+                    <label>Inactive<input type="checkbox" id="ativo" name="ativo" th:checked="${usuario.ativo}"
+                                          th:disabled="${usuarioLogado.login eq usuario.login || usuarioLogado.nivel eq 0}">
+                        <span class="lever"></span>Active</label>
+                </div>
+            </div>
+
+            <div class="input-field col s3">
+                <div class="switch">
+                    <label><input type="checkbox" id="nivel" name="nivel" th:checked="${usuario.nivel}"
+                                  th:disabled="${usuarioLogado.login eq usuario.login}"/><span style="font-size: 12px;">Administrador</span></label>
+                </div>
+            </div>
+
+            <div class="input-field col s6">
+                <select style="font-size: 12px;" class="browser-default" id="tipoDepartamento" name="tipoDepartamento"
+                        th:disabled="${usuarioLogado.login eq usuario.login}" required>
+                    <option th:each="tipoDepartamento : ${lsTipoDepartamento}"
+                            th:value="${tipoDepartamento.departamentoId}"
+                            th:text="${tipoDepartamento.nomeDepartamento}"
+                            th:selected="${tipoDepartamento.nomeDepartamento eq usuario.departamento}"></option>
+                </select>
+            </div>
+            <a th:href=@{/usuarios} id="btnVoltar" th:name="btnVoltar"
+               class="waves-effect waves-light blue lighten-1 btn-small"><i class="material-icons left">arrow_back</i>Back</a>
+            <a id="btnAtualizar" th:name="btnSalvar" class="waves-effect waves-light blue lighten-1 btn-small"><i
+                    class="material-icons left">cached</i>Update</a>
+        </div>
+    </form>
+    <div id="progress" style="display: none;" class="progress">
+        <div class="indeterminate"></div>
+    </div>
+</div>
+<script type="text/javascript" src="js/materialize.min.js"></script>
+<script>
+    $(document).ready(function () {
+        $('.dropdown-trigger').dropdown();
+    });
+
+    function alterarSenha() {
+
+        var trocarSenha = $("#checkSenha").is(':checked');
+        if (trocarSenha == true) {
+            $("#senha").prop('disabled', false);
+            $("#senhaConfirma").prop('disabled', false);
+        } else {
+            $("#senha").val('');
+            $("#senhaConfirma").val('');
+            $("#senha").prop('disabled', true);
+            $("#senhaConfirma").prop('disabled', true);
+        }
+    }
+
+    function validaAtivoNivel() {
+
+        var usuarioAtivo = $("#ativo").is(':checked');
+        var nivelUsuario = $("#nivel").is(':checked');
+        if (usuarioAtivo == true) {
+            $("#ativo").val(true);
+        } else {
+            $("#ativo").val(false);
+        }
+        if (nivelUsuario == true) {
+            $("#nivel").val(1);
+        } else {
+            $("#nivel").val(0);
+        }
+    }
+
+    $("#btnAtualizar").click(function () {
+
+        if ($("#nome").val() && $("#login").val()) {
+
+            if ($("#senha").val() == $("#senhaConfirma").val()) {
+
+                $("#nome").prop('disabled', true);
+                $("#login").prop('disabled', true);
+                $("#senha").prop('disabled', true);
+                $("#senhaConfirma").prop('disabled', true);
+                $("#email").prop('disabled', true);
+                $("#ativo").prop('disabled', true);
+                $("#nivel").prop('disabled', true);
+                $('#departamentoId').attr('disabled', 'disabled');
+                $("#btnAtualizar").attr("disabled", "disabled");
+                $("#btnVoltar").attr("disabled", "disabled");
+                $("#msg").hide();
+                $("#progress").show();
+
+                validaAtivoNivel();
+
+                $.ajax({
+                    type: 'POST',
+                    url: 'alterarUsuario',
+                    data: {
+                        'usuarioId': $('#usuarioId').val(),
+                        'nome': $('#nome').val(),
+                        'login': $('#login').val(),
+                        'senha': $('#senha').val(),
+                        'email': $('#email').val(),
+                        'nivel': $('#nivel').val(),
+                        'ativo': $('#ativo').val(),
+                        'tipoDepartamento': $('#tipoDepartamento').val(),
+                    },
+                    success: function (response) {
+                        location.reload();
+                    },
+                    error: function () {
+                        alert('ocorreu um erro!');
+                    }
+                });
+            } else {
+                alert('As senhas devem ser iguais!')
+                return false;
+            }
+        }
+    });
+</script>
+</body>
+<div th:replace="fragments/footer :: footer">&nbsp;</div>
+</html>

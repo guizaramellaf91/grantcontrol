@@ -1,0 +1,12 @@
+{"properties": [
+  {
+    "name": "spring.favicon.enabled",
+    "type": "java.lang.String",
+    "description": "A description for 'spring.favicon.enabled'"
+  },
+  {
+    "name": "spring.datasource.pool-size",
+    "type": "java.lang.String",
+    "description": "A description for 'spring.datasource.pool-size'"
+  }
+]}

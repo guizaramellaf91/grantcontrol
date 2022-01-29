@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html xmlns:th="http://thymeleaf.org">
+<head>
+    <link rel="icon" th:href=@{favicon.ico} type="image/x-icon"/>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"/>
+    <link type="text/css" rel="stylesheet" href="css/materialize.min.css" media="screen,projection"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <meta charset="ISO-8859-1">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <title>GrantControl - ChangeLog</title>
+</head>
+<div th:replace="fragments/header :: header">&nbsp;</div>
+<body>
+<div class="container" align="center">
+    <br>
+    Hist&oacute;rico de Altera&ccedil;&otilde;es
+    <br><br>
+    <table>
+        <thead>
+        <tr style="font-size: 12px;">
+            <th>Data</th>
+            <th>Descri&ccedil;&atilde;o</th>
+        </tr>
+        </thead>
+        <tbody style="font-size: 12px;">
+        <tr th:each="changeLog : ${listarChangeLogs}">
+            <td><span th:text="${#dates.format(changeLog.dataAlteracao, 'dd/MM/yyyy HH:mm')}"></span></td>
+            <td><span th:text="${changeLog.descricao}"></span></td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+<script type="text/javascript" src="js/materialize.min.js"></script>
+<script>
+    $(document).ready(function () {
+        $('.dropdown-trigger').dropdown();
+    });
+</script>
+</body>
+<div th:replace="fragments/footer :: footer">&nbsp;</div>
+</html>

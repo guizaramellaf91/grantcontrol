@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html xmlns:th="http://thymeleaf.org">
+<head>
+    <link rel="icon" th:href=@{favicon.ico} type="image/x-icon"/>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"/>
+    <link type="text/css" rel="stylesheet" href="../css/materialize.min.css" media="screen,projection"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <meta charset="ISO-8859-1">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <title>GrantControl - Details Knowledge</title>
+</head>
+<div th:replace="fragments/header :: header">&nbsp;</div>
+<body>
+<div class="container">
+    <br> <a th:href=@{/guiaweb}
+            class="waves-effect waves-light blue lighten-1 btn-small"><i
+        class="material-icons left">arrow_back</i>Back</a> <br>
+    <br>
+    <form id="form" class="col s12" method="post">
+        <div class="row">
+            <input type="hidden" th:field="${guiaWeb.guiaWebId}"/>
+            <div class="input-field col s2">
+                <input style="font-size: 12px;" id="dataCadastro"
+                       name="nomeCliente"
+                       th:value="${#dates.format(guiaWeb.dataCadastro, 'dd/MM/yyyy HH:mm')}"
+                       type="text" required disabled> <label
+                    style="font-size: 12px;" for="dataCadastro">Registered in</label>
+            </div>
+            <div style="font-size: 12px;" class="input-field col s10">
+                <input style="font-size: 12px; font-weight: bold;" id="titulo"
+                       name="titulo" th:value="${guiaWeb.titulo}" type="text"
+                       maxlength="80" th:readonly="true" required> <label
+                    style="font-size: 12px;" for="titulo">Title</label>
+            </div>
+            <div style="font-size: 12px;" class="input-field col s12">
+                <input style="font-size: 12px; font-weight: bold;" id="descricao" name="descricao"
+                       th:value="${guiaWeb.descricao}" type="text" maxlength="80" th:readonly="true" required>
+                <label style="font-size: 12px;" for="descricao">Description</label>
+            </div>
+            <button th:if="${usuarioLogado.nivel eq 1}"
+                    class="btn waves-effect waves-light blue lighten-1" type="submit">
+                Change<i class="material-icons right">save</i>
+            </button>
+        </div>
+    </form>
+</div>
+
+<!-- scripts -->
+<script type="text/javascript" src="../js/materialize.min.js"></script>
+<script>
+    $(document).ready(function () {
+        $('.dropdown-trigger').dropdown();
+    });
+</script>
+</body>
+<div th:replace="fragments/footer :: footer">&nbsp;</div>
+</html>

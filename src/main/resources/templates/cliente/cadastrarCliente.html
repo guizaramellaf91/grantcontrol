@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html xmlns:th="http://thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<head>
+<link rel="icon" th:href=@{favicon.ico} type="image/x-icon" />
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
+<link type="text/css" rel="stylesheet" href="css/materialize.min.css" media="screen,projection" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta charset="ISO-8859-1">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+<title>GrantControl - Register Customer</title>
+</head>
+<div th:replace="fragments/header :: header">&nbsp;</div>
+<body>	
+<div class="container" align="center">
+  <br><br>
+    <form class="container" method="post">
+        <div class="input-field col s6">
+          <input oninput="handleInput(event)" style="font-size: 12px; font-weight: bold;" id="nome" name="nomeCliente" type="text" required>
+          <label style="font-size: 12px;" for="nome">Name</label>
+        </div>
+      <div th:if="${usuarioLogado.login eq 'admin'}" class="switch">
+ 	   <label>Inactive<input type="checkbox" id="ativo" name="ativo" checked><span class="lever"></span>Active</label>
+  	  </div>
+  	  <div th:if="${usuarioLogado.login ne 'admin'}" class="switch">
+ 	   <input type="hidden" id="ativo" name="ativo" value="true">
+  	  </div>
+  	  <br>
+  	  <div align="center"><strong><label style="color: #b30000;" id="msg" th:text="${msg}"></label></strong></div>
+  	  <br><br>
+  	  <a href="clientes" class="waves-effect waves-light blue lighten-1 btn-small"><i class="material-icons left">arrow_back</i>Back</a>
+      <button class="btn waves-effect pulse blue lighten-1 waves-light" type="submit">Register<i class="material-icons right">save</i></button>
+    </form>
+  </div>
+<script type="text/javascript" src="js/materialize.min.js"></script>
+<script>
+$(document).ready(function(){
+	$('.dropdown-trigger').dropdown();
+});
+
+function handleInput(e) {
+	   var ss = e.target.selectionStart;
+	   var se = e.target.selectionEnd;
+	   e.target.value = e.target.value.toUpperCase();
+	   e.target.selectionStart = ss;
+	   e.target.selectionEnd = se;
+}
+
+</script>
+</body>
+<div th:replace="fragments/footer :: footer">&nbsp;</div>
+</html>

@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html xmlns:th="http://thymeleaf.org">
+<head>
+    <link rel="icon" th:href=@{favicon.ico} type="image/x-icon"/>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"/>
+    <link type="text/css" rel="stylesheet" href="css/materialize.min.css" media="screen,projection"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <meta charset="ISO-8859-1">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <title>GrantControl - Register User</title>
+</head>
+<div th:replace="fragments/header :: header">&nbsp;</div>
+<body>
+<div class="container">
+    <br>
+    <div>
+        <i class="material-icons left">person_add</i><label style="font-size: 14px;">New User</label>
+    </div>
+    <div align="center"><strong><label style="color: #b30000;" id="msg" th:text="${msg}"></label></strong></div>
+    <br>
+    <form class="col s12">
+        <div class="row">
+            <div class="input-field col s6">
+                <input style="font-size: 12px; font-weight: bold;" id="nome" name="nome" type="text" required>
+                <label style="font-size: 12px;" for="nome">Name</label>
+            </div>
+            <div class="input-field col s6">
+                <input style="font-size: 12px; font-weight: bold;" id="login" name="login" type="text" required>
+                <label style="font-size: 12px;" for="login">Username</label>
+            </div>
+            <div class="input-field col s3">
+                <input style="font-size: 12px; font-weight: bold;" id="senha" name="senha" maxlength="15"
+                       type="password" required>
+                <label style="font-size: 12px;" for="senha">Password</label>
+            </div>
+            <div class="input-field col s3">
+                <input style="font-size: 12px; font-weight: bold;" id="senhaConfirma" name="senhaConfirma"
+                       maxlength="15" type="password" required>
+                <label style="font-size: 12px;" for="senhaConfirma">Confirm Password</label>
+            </div>
+            <div class="input-field col s6">
+                <input style="font-size: 12px; font-weight: bold;" placeholder="Insert your email address" id="email"
+                       name="email" type="email" required>
+                <label style="font-size: 12px;" for="email">E-mail</label>
+            </div>
+            <div class="input-field col s3">
+                <div class="switch">
+                    <label>Inactive<input type="checkbox" id="ativo" name="ativo"><span
+                            class="lever"></span>Active</label>
+                </div>
+            </div>
+            <div class="input-field col s3">
+                <div class="switch">
+                    <label><input type="checkbox" id="nivel" name="nivel"/><span
+                            style="font-size: 12px;">Administrator</span></label>
+                </div>
+            </div>
+            <div class="input-field col s6">
+                <select style="font-size: 12px;" class="browser-default" id="tipoDepartamento" name="tipoDepartamento" required>
+                    <option th:each="tipoDepartamento : ${lsTipoDepartamento}"
+                            th:value="${tipoDepartamento.departamentoId}"
+                            th:text="${tipoDepartamento.nomeDepartamento}"></option>
+                </select>
+            </div>
+        </div>
+        <br>
+        <a th:href=@{/usuarios} class="waves-effect waves-light blue lighten-1 btn-small"><i
+                class="material-icons left">arrow_back</i>Back</a>
+        <a id="btnSalvar" th:name="btnSalvar" class="waves-effect waves-light blue lighten-1 btn-small"><i
+                class="material-icons left">save</i>Register User</a>
+        <div id="progress" style="display: none;" class="progress">
+            <div class="indeterminate"></div>
+        </div>
+    </form>
+</div>
+<script type="text/javascript" src="js/materialize.min.js"></script>
+<script>
+    $(document).ready(function () {
+        $('.dropdown-trigger').dropdown();
+    });
+
+    function validaAtivoNivel() {
+
+        var usuarioAtivo = $("#ativo").is(':checked');
+        var nivelUsuario = $("#nivel").is(':checked');
+        if (usuarioAtivo == true) {
+            $("#ativo").val(true);
+        } else {
+            $("#ativo").val(false);
+        }
+        if (nivelUsuario == true) {
+            $("#nivel").val(1);
+        } else {
+            $("#nivel").val(0);
+        }
+    }
+
+    $("#btnSalvar").click(function () {
+
+        if ($("#nome").val() && $("#login").val()) {
+
+            if ($("#senha").val() == $("#senhaConfirma").val()) {
+
+                $("#nome").prop('disabled', true);
+                $("#login").prop('disabled', true);
+                $("#senha").prop('disabled', true);
+                $("#senhaConfirma").prop('disabled', true);
+                $("#email").prop('disabled', true);
+                $("#ativo").prop('disabled', true);
+                $("#nivel").prop('disabled', true);
+                $('#tipoDepartamento').attr('disabled', 'disabled');
+                $("#btnSalvar").attr("disabled", "disabled");
+                $("#btnVoltar").attr("disabled", "disabled");
+                $("#msg").hide();
+                $("#progress").show();
+
+                validaAtivoNivel();
+
+                $.ajax({
+                    type: 'POST',
+                    url: 'cadastrarUsuario',
+                    data: {
+                        'nome': $('#nome').val(),
+                        'login': $('#login').val(),
+                        'senha': $('#senha').val(),
+                        'email': $('#email').val(),
+                        'nivel': $('#nivel').val(),
+                        'ativo': $('#ativo').val(),
+                        'tipoDepartamento': $('#tipoDepartamento').val(),
+                    },
+                    success: function (response) {
+                        location.href = "./usuarios";
+                    },
+                    error: function () {
+                        alert('ocorreu um erro!');
+                    }
+                });
+            } else {
+                alert('As senhas devem ser iguais!')
+                return false;
+            }
+        }
+    });
+</script>
+</body>
+<div th:replace="fragments/footer :: footer">&nbsp;</div>
+</html>

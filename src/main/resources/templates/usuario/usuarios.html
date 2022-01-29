@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html xmlns:th="http://thymeleaf.org">
+<head>
+    <link rel="icon" th:href=@{favicon.ico} type="image/x-icon"/>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"/>
+    <link type="text/css" rel="stylesheet" href="css/materialize.min.css" media="screen,projection"/>
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <meta charset="ISO-8859-1">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <title>GrantControl - Users</title>
+</head>
+<div th:replace="fragments/header :: header">&nbsp;</div>
+<body>
+<br>
+<div class="container" align="center">
+    <div th:if="${dashboardTela eq true}" id="chart_div"></div>
+    <a href="cadastrarUsuario" style="font-size: 10px;" class="waves-effect waves-light blue lighten-1 btn-small"
+       th:disabled="${usuarioLogado.nivel == 0}"><i class="material-icons left">add</i>Register User</a>
+</div>
+<br><br>
+<form id="formBuscarUsuario" action="buscarUsuario" class="container" method="post">
+    <input type="text" style="font-size: 11px; font-weight: bold;" id="nomeUsuario" name="nomeUsuario"
+           placeholder="Enter the username"/>
+    <a onclick="buscarUsuarioAgora()" style="font-size: 10px;" class="waves-effect waves-light blue lighten-1 btn"><i
+            class="material-icons left">find_in_page</i>Search</a>
+    <a th:href=@{/usuarios} style="font-size: 10px;" class="waves-effect waves-light blue lighten-1 btn"><i
+            class="material-icons left">find_replace</i>Clean</a>
+</form>
+<br>
+<table class="container">
+    <thead>
+    <tr style="font-size: 12px;">
+        <th>Name</th>
+        <th>Department</th>
+        <th>Last acess</th>
+        <th>Access</th>
+        <th>Status</th>
+        <th>Profile</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="usuario : ${usuarios}"
+        th:style="${{usuario.login eq usuarioLogado.login} ? 'font-size: 13px; font-weight: bold;' : 'font-size: 11px;'}">
+        <td><span th:text="${usuario.nome}"></span></td>
+        <td><span th:text="${usuario.departamento}"></span></td>
+        <td><span
+                th:text="${usuario.ultimoAcesso ne null ? #dates.format(usuario.ultimoAcesso, 'dd/MM/yyyy HH:mm') : 'N/A'}"></span>
+        <td><span th:text="${usuario.acessos}"></span>
+        <td><span th:text="${usuario.ativo eq true} ? 'Active' : 'Inactive'"></span></td>
+        <td th:if="${usuario.login eq usuarioLogado.login || usuarioLogado.login eq 'admin' || usuarioLogado.departamento eq 'GERAL' || userEditUser}">
+            <a th:href="${(#mvc.url('UC#detalhesUsuario').arg(0, usuario.usuarioId)).build()}"><i
+                    class="small material-icons">touch_app</i></a></td>
+        <td th:unless="${usuario.login eq usuarioLogado.login || usuarioLogado.login eq 'admin' || usuarioLogado.departamento eq 'GERAL' || userEditUser}">
+            <i class="small material-icons">lock_outline</i></td>
+    </tr>
+    </tbody>
+</table>
+<br><br>
+<div class="container" align="center">
+    <div th:if="${searchUsuario ne true && usuarios.totalPages != 1}">
+        <ul class="pagination">
+            <li th:class="${usuarios.number == 0} ? disabled"><a
+                    class="pageLink"
+                    th:href="@{/usuarios(pageSize=${selectedPageSize}, page=1)}">&laquo;</a>
+            </li>
+            <li th:class="${usuarios.number == 0} ? disabled"><a
+                    class="pageLink"
+                    th:href="@{/usuarios(pageSize=${selectedPageSize}, page=${usuarios.number})}">&larr;</a>
+            </li>
+            <li
+                    th:class="${usuarios.number == (page - 1)} ? 'active pointer-disabled'"
+                    th:each="page : ${#numbers.sequence(pager.startPage, pager.endPage)}">
+                <a class="pageLink"
+                   th:href="@{/usuarios(pageSize=${selectedPageSize}, page=${page})}"
+                   th:text="${page}"></a>
+            </li>
+            <li
+                    th:class="${usuarios.number + 1 == usuarios.totalPages} ? disabled">
+                <a class="pageLink"
+                   th:href="@{/usuarios(pageSize=${selectedPageSize}, page=${usuarios.number + 2})}">&rarr;</a>
+            </li>
+            <li
+                    th:class="${usuarios.number + 1 == usuarios.totalPages} ? disabled">
+                <a class="pageLink"
+                   th:href="@{/usuarios(pageSize=${selectedPageSize}, page=${usuarios.totalPages})}">&raquo;</a>
+            </li>
+        </ul>
+    </div>
+</div>
+<script type="text/javascript">
+
+    google.charts.load('current', {'packages': ['corechart']});
+    google.charts.setOnLoadCallback(dadosUsuarios);
+
+    function dadosUsuarios() {
+        var data = new google.visualization.DataTable();
+        data.addColumn('string', 'Topping');
+        data.addColumn('number', 'Slices');
+        data.addRows([
+            ['Active', [[${quantidadeUsuariosAtivos}]]],
+            ['Inactive', [[${quantidadeUsuariosInativos}]]]
+        ]);
+
+        var options = {
+            'width': 260,
+            'height': 150,
+            pieHole: 0.3,
+            colors: ['#42a5f5', '#9ed1fa'],
+        };
+        var chart = new google.visualization.PieChart(document.getElementById('chart_div'));
+        chart.draw(data, options);
+    }
+</script>
+<script>
+    $(document).ready(function () {
+        $('.dropdown-trigger').dropdown();
+    });
+
+    function buscarUsuarioAgora() {
+        document.getElementById("formBuscarUsuario").submit();
+    }
+</script>
+<script type="text/javascript" src="js/materialize.min.js"></script>
+<script th:inline="javascript">
+    /*<![CDATA[*/
+    function changePageAndSize() {
+        $('#pageSizeSelect').change(function (evt) {
+            window.location.replace("/grantcontrol/usuarios?pageSize=" + this.value + "&page=1");
+        });
+    }
+
+    /*]]>*/
+</script>
+</body>
+<div th:replace="fragments/footer :: footer">&nbsp;</div>
+</html>

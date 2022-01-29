@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html xmlns:th="http://thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<head>
+<link rel="icon" th:href=@{favicon.ico} type="image/x-icon" />
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
+<link type="text/css" rel="stylesheet" href="css/materialize.min.css" media="screen,projection" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta charset="ISO-8859-1">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+<title>GrantControl - Settings</title>
+</head>
+<div th:replace="fragments/header :: header">&nbsp;</div>
+<body>
+	<div class="container" align="center">
+		<br>
+		<div align="center">
+			<i class="material-icons">aspect_ratio</i> <br> <label>Manage System Parameters</label> <br> <br>
+			<table class="container">
+				<thead>
+					<tr style="font-size: 12px;">
+						<th>Parameter ID</th>
+						<th>Key</th>
+						<th>Change</th>
+					</tr>
+				</thead>
+				<tbody style="font-size: 12px;">
+					<tr th:each="parametrosSistema : ${lsParametrosSistema}">
+						<td style="font-weight: bold;"><span
+							th:text="${parametrosSistema.parametroId}"></span></td>
+						<td style="font-weight: bold;"><span
+							th:text="${parametrosSistema.chave}"></span></td>
+						<td><a href="javascript:void(0);"
+							th:onclick="showDetalhesParametro( [[${parametrosSistema}]] );"
+							class="modal-trigger"><i class="tiny material-icons">settings</i></a></td>
+					</tr>
+				</tbody>
+			</table>
+			<br> <a th:href=@{#modalInserirParametro}
+				style="font-size: 12px;"
+				class="waves-effect waves-light blue lighten-1 btn-small modal-trigger"
+				th:if="${usuarioLogado.nivel == 1}"> <i
+				class="material-icons left">add_box</i>Insert Parameter
+			</a> <br>
+			<br>
+			<br>
+			<br>
+		</div>
+
+		<div align="center">
+			<i class="material-icons">call_split</i> <br> <label>Manage Email Parameters</label> <br> <br>
+			<table class="container">
+				<thead>
+					<tr style="font-size: 12px;">
+						<th>Parameter Email ID</th>
+						<th>E-mail</th>
+						<th>Change</th>
+					</tr>
+				</thead>
+				<tbody style="font-size: 12px;">
+					<tr th:each="parametroEmail : ${lsParametrosEmail}">
+						<td style="font-weight: bold;"><span
+							th:text="${parametroEmail.parametroEmailId}"></span></td>
+						<td style="font-weight: bold;"><span
+							th:text="${parametroEmail.emailFrom}"></span></td>
+						<td><a href="javascript:void(0);"
+							th:onclick="showDetalhesParametroEmail( [[${parametroEmail}]] );"
+							class="modal-trigger"><i class="tiny material-icons">settings</i></a></td>
+					</tr>
+				</tbody>
+			</table>
+			<br> <a th:href=@{#modalDadosParametroEmail}
+				style="font-size: 12px;"
+				class="waves-effect waves-light blue lighten-1 btn-small modal-trigger"
+				th:if="${usuarioLogado.nivel == 1}"> <i
+				class="material-icons left">add_box</i>Insert E-mail
+			</a> <br>
+			<br>
+			<br>
+			<br>
+		</div>
+
+		<div align="center">
+			<i class="material-icons">bug_report</i> <br> <label>Manage Environments</label> <br> <br>
+			<table class="container">
+				<thead>
+					<tr style="font-size: 12px;">
+						<th>Type Environment ID</th>
+						<th>Environment Name</th>
+						<th>Change</th>
+					</tr>
+				</thead>
+				<tbody style="font-size: 12px;">
+					<tr th:each="tipoAmbiente : ${lsTipoAmbiente}">
+						<td style="font-weight: bold;"><span
+							th:text="${tipoAmbiente.tipoAmbienteId}"></span></td>
+						<td style="font-weight: bold;"><span
+							th:text="${tipoAmbiente.nomeAmbiente}"></span></td>
+						<td><a href="javascript:void(0);"
+							th:onclick="showDetalhesAmbiente( [[${tipoAmbiente}]] );"
+							class="modal-trigger"><i class="tiny material-icons">settings</i></a></td>
+					</tr>
+				</tbody>
+			</table>
+			<br> <a href="#" style="font-size: 12px;"
+				class="waves-effect waves-light blue lighten-1 btn-small"
+				th:if="${usuarioLogado.nivel == 1}"> <i
+				class="material-icons left">add_box</i>Insert Environment
+			</a> <br>
+			<br>
+			<br>
+			<br>
+		</div>
+
+		<div align="center">
+			<i class="material-icons">child_friendly</i> <br> <label>Manage Product Types</label> <br> <br>
+			<table class="container">
+				<thead>
+					<tr style="font-size: 12px;">
+						<th>Type Product ID</th>
+						<th>Product's name</th>
+						<th>Change</th>
+					</tr>
+				</thead>
+				<tbody style="font-size: 12px;">
+					<tr th:each="tipoProduto : ${lsTipoProduto}">
+						<td style="font-weight: bold;"><span
+							th:text="${tipoProduto.tipoProdutoId}"></span></td>
+						<td style="font-weight: bold;"><span
+							th:text="${tipoProduto.nomeProduto}"></span></td>
+						<td><a href="javascript:void(0);"
+							th:onclick="showDetalhesProduto( [[${tipoProduto}]] );"
+							class="modal-trigger"><i class="tiny material-icons">settings</i></a></td>
+					</tr>
+				</tbody>
+			</table>
+			<br> <a th:href=@{#modalInserirProduto} style="font-size: 12px;"
+				class="waves-effect waves-light blue lighten-1 btn-small modal-trigger"
+				th:if="${usuarioLogado.nivel == 1}"> <i
+				class="material-icons left">add_box</i>Insert Product
+			</a> <br>
+			<br>
+			<br>
+			<br>
+		</div>
+
+		<div align="center">
+			<i class="material-icons">group_work</i> <br> <label>Manage Departments</label> <br> <br>
+			<table class="container">
+				<thead>
+					<tr style="font-size: 12px;">
+						<th>Department ID</th>
+						<th>Department Name</th>
+						<th>Change</th>
+					</tr>
+				</thead>
+				<tbody style="font-size: 12px;">
+					<tr th:each="tipoDepartamento : ${lsTipoDepartamento}">
+						<td style="font-weight: bold;"><span
+							th:text="${tipoDepartamento.departamentoId}"></span></td>
+						<td style="font-weight: bold;"><span
+							th:text="${tipoDepartamento.nomeDepartamento}"></span></td>
+						<td><a href="javascript:void(0);"
+							th:onclick="showDetalhesDepartamento( [[${tipoDepartamento}]] );"
+							class="modal-trigger"><i class="tiny material-icons">settings</i></a></td>
+					</tr>
+				</tbody>
+			</table>
+			<br> <a href="#" style="font-size: 12px;"
+				class="waves-effect waves-light blue lighten-1 btn-small"
+				th:if="${usuarioLogado.nivel == 1}"> <i
+				class="material-icons left">add_box</i>Insert Department
+			</a> <br>
+			<br>
+			<br>
+			<br>
+		</div>
+	</div>
+	<div id="modalDadosParametro" class="modal">
+		<div class="modal-content" align="center">
+			<div class="row">
+				<input type="hidden" id="parametroId">
+				<div class="input-field col s6">
+					<input style="font-size: 12px; font-weight: bold;" type="text"
+						id="chave" placeholder="Chave" required>
+				</div>
+				<div class="input-field col s6">
+					<input style="font-size: 12px; font-weight: bold;" type="text"
+						id="valor" placeholder="Valor" required>
+				</div>
+				<div class="input-field col s12">
+					<input style="font-size: 12px; font-weight: bold;" type="text"
+						id="descricao" placeholder="Descri&ccedil;&atilde;o" required>
+				</div>
+			</div>
+			<br> <a id="btnAlterarParametro" style="font-size: 9px;"
+				class="waves-effect waves-light blue lighten-1 btn-small"><i
+				class="material-icons left">save</i>Change</a>
+		</div>
+	</div>
+	<div id="modalInserirParametro" class="modal">
+		<div class="modal-content" align="center">
+			<div class="row">
+				<div class="input-field col s6">
+					<input style="font-size: 12px; font-weight: bold;" type="text"
+						id="inserirChave" placeholder="Chave" required>
+				</div>
+				<div class="input-field col s6">
+					<input style="font-size: 12px; font-weight: bold;" type="text"
+						id="inserirValor" placeholder="Valor" required>
+				</div>
+				<div class="input-field col s12">
+					<input style="font-size: 12px; font-weight: bold;" type="text"
+						id="inserirDescricao" placeholder="Descri&ccedil;&atilde;o"
+						required>
+				</div>
+			</div>
+			<br> <a id="btnInserirParametro" style="font-size: 9px;"
+				class="waves-effect waves-light blue lighten-1 btn-small"><i
+				class="material-icons left">save</i>Insert</a>
+		</div>
+	</div>
+	<div id="modalDadosParametroEmail" class="modal">
+		<div class="modal-content" align="center">
+			<div class="row">
+				<input type="hidden" id="parametroEmailId">
+				<div class="input-field col s6">
+					<input style="font-size: 12px; font-weight: bold;" type="text"
+						id="emailFromName" placeholder="Nome Enviado" required>
+				</div>
+				<div class="input-field col s6">
+					<input style="font-size: 12px; font-weight: bold;" type="text"
+						id="emailFrom" placeholder="E-mail" required>
+				</div>
+				<div class="input-field col s6">
+					<input style="font-size: 12px; font-weight: bold;" type="text"
+						id="emailSmtpUsername" placeholder="E-mail SMTP" required>
+				</div>
+				<div class="input-field col s6">
+					<input style="font-size: 12px; font-weight: bold;" type="password"
+						id="emailSmtpPassword" placeholder="Senha SMTP" required>
+				</div>
+				<div class="input-field col s6">
+					<input style="font-size: 12px; font-weight: bold;" type="text"
+						id="emailSmtpHost" placeholder="Servidor SMTP" required>
+				</div>
+				<div class="input-field col s6">
+					<input style="font-size: 12px; font-weight: bold;" type="text"
+						id="emailPort" placeholder="Porta SMTP" required>
+				</div>
+				<div class="input-field col s6">
+					<input style="font-size: 12px; font-weight: bold;" type="text"
+						id="emailSubject" placeholder="Assunto E-mail" required>
+				</div>
+				<div class="input-field col s6">
+					<input style="font-size: 12px; font-weight: bold;" type="text"
+						id="configSet" placeholder="ConfigSet" required disabled>
+				</div>
+				<div class="input-field col s6">
+					<input style="font-size: 12px; font-weight: bold;" type="text"
+						id="urlEnvio" placeholder="URL de envio" required>
+				</div>
+			</div>
+			<br> <a id="btnAlterarParametroEmail" style="font-size: 9px;"
+				class="waves-effect waves-light blue lighten-1 btn-small"><i
+				class="material-icons left">save</i>Change</a>
+		</div>
+	</div>
+	<div id="modalDadosAmbiente" class="modal">
+		<div class="modal-content" align="center">
+			<div class="row">
+				<input type="hidden" id="tipoAmbienteId">
+				<div class="input-field col s12">
+					<input oninput="handleInput(event)"
+						style="font-size: 12px; font-weight: bold;" type="text"
+						id="nomeAmbiente" placeholder="Nome do Ambiente" required>
+				</div>
+			</div>
+			<br> <a id="btnAlterarAmbiente" style="font-size: 9px;"
+				class="waves-effect waves-light blue lighten-1 btn-small"><i
+				class="material-icons left">save</i>Change</a>
+		</div>
+	</div>
+	<div id="modalDadosProduto" class="modal">
+		<div class="modal-content" align="center">
+			<div class="row">
+				<input type="hidden" id="tipoProdutoId">
+				<div class="input-field col s12">
+					<input oninput="handleInput(event)"
+						style="font-size: 12px; font-weight: bold;" type="text"
+						id="nomeProduto" placeholder="Nome do Produto" required>
+				</div>
+			</div>
+			<br> <a id="btnAlterarProduto" style="font-size: 9px;"
+				class="waves-effect waves-light blue lighten-1 btn-small"><i
+				class="material-icons left">save</i>Change</a>
+		</div>
+	</div>
+	<div id="modalInserirProduto" class="modal">
+		<div class="modal-content" align="center">
+			<div class="row">
+				<div class="input-field col s12">
+					<input oninput="handleInput(event)"
+						style="font-size: 12px; font-weight: bold;" type="text"
+						id="inserirNomeProduto" placeholder="Nome do Produto" required>
+				</div>
+			</div>
+			<br> <a id="btnInserirProduto" style="font-size: 9px;"
+				class="waves-effect waves-light blue lighten-1 btn-small modal-trigger"><i
+				class="material-icons left">save</i>Insert</a>
+		</div>
+	</div>
+	<div id="modalDadosDepartamento" class="modal">
+		<div class="modal-content" align="center">
+			<div class="row">
+				<input type="hidden" id="tipoDepartamentoId">
+				<div class="input-field col s12">
+					<input style="font-size: 12px; font-weight: bold;" type="text"
+						id="nomeDepartamento" placeholder="Nome do Departamento" required>
+				</div>
+			</div>
+			<br> <a id="btnAlterarDepartamento" style="font-size: 9px;"
+				class="waves-effect waves-light blue lighten-1 btn-small"><i
+				class="material-icons left">save</i>Change</a>
+		</div>
+	</div>
+<script type="text/javascript" src="js/materialize.min.js"></script>
+<script>
+	$(document).ready(function() {
+		$('.modal').modal();
+		$('.dropdown-trigger').dropdown();
+	});
+
+	function showDetalhesParametro(parametrosSistema) {
+
+		document.getElementById("parametroId").value = parametrosSistema.parametroId;
+		document.getElementById("chave").value = parametrosSistema.chave;
+		document.getElementById("valor").value = parametrosSistema.valor;
+		document.getElementById("descricao").value = parametrosSistema.descricao;
+		$('#modalDadosParametro').modal('open');
+	}
+
+	function showDetalhesParametroEmail(parametroEmail) {
+
+		document.getElementById("parametroEmailId").value = parametroEmail.parametroEmailId;
+		document.getElementById("emailFrom").value = parametroEmail.emailFrom;
+		document.getElementById("emailFromName").value = parametroEmail.emailFromName;
+		document.getElementById("emailSmtpUsername").value = parametroEmail.emailSmtpUsername;
+		document.getElementById("emailSmtpPassword").value = parametroEmail.emailSmtpPassword;
+		document.getElementById("emailSmtpHost").value = parametroEmail.emailSmtpHost;
+		document.getElementById("emailPort").value = parametroEmail.emailPort;
+		document.getElementById("emailSubject").value = parametroEmail.emailSubject;
+		document.getElementById("configSet").value = parametroEmail.configSet;
+		document.getElementById("urlEnvio").value = parametroEmail.urlEnvio;
+		$('#modalDadosParametroEmail').modal('open');
+	}
+	
+	function showDetalhesAmbiente(tipoAmbiente) {
+
+		document.getElementById("tipoAmbienteId").value = tipoAmbiente.tipoAmbienteId;
+		document.getElementById("nomeAmbiente").value = tipoAmbiente.nomeAmbiente;
+		$('#modalDadosAmbiente').modal('open');
+	}
+
+	function showDetalhesProduto(tipoProduto) {
+
+		document.getElementById("tipoProdutoId").value = tipoProduto.tipoProdutoId;
+		document.getElementById("nomeProduto").value = tipoProduto.nomeProduto;
+		$('#modalDadosProduto').modal('open');
+	}
+
+	function showDetalhesDepartamento(tipoDepartamento) {
+
+		document.getElementById("tipoDepartamentoId").value = tipoDepartamento.departamentoId;
+		document.getElementById("nomeDepartamento").value = tipoDepartamento.nomeDepartamento;
+		$('#modalDadosDepartamento').modal('open');
+	}
+
+	$("#btnAlterarParametro").click(
+			function() {
+
+				if ($("#chave").val() && $("#valor").val()
+						&& $("#descricao").val()) {
+
+					$("#btnAlterarParametro").attr("disabled", "disabled");
+
+					$.ajax({
+						type : 'POST',
+						url : 'alterarConfiguracao',
+						data : {
+							"parametroId" : $('#parametroId').val(),
+							"chave" : $('#chave').val(),
+							"valor" : $('#valor').val(),
+							"descricao" : $('#descricao').val(),
+						},
+						success : function(data) {
+							location.reload();
+						},
+						error : function() {
+							alert("Ocorreu um erro ao alterar os dados.");
+							$("#btnAlterarParametro").attr("disabled",
+									false);
+						}
+					});
+
+				} else {
+					alert('Preencha o campo para prosseguir!');
+					return;
+				}
+			});
+
+	$("#btnInserirParametro").click(
+			function() {
+
+				if ($("#inserirChave").val() && $("#inserirValor").val()
+						&& $("#inserirDescricao").val()) {
+
+					$("#btnInserirParametro").attr("disabled", "disabled");
+
+					$.ajax({
+						type : 'POST',
+						url : 'inserirParametro',
+						data : {
+							"chave" : $('#inserirChave').val(),
+							"valor" : $('#inserirValor').val(),
+							"descricao" : $('#inserirDescricao').val(),
+						},
+						success : function(data) {
+							location.reload();
+						},
+						error : function() {
+							alert("Ocorreu um erro ao alterar os dados.");
+							$("#btnAlterarParametro").attr("disabled",
+									false);
+						}
+					});
+
+				} else {
+					alert('Preencha o campo para prosseguir!');
+					return;
+				}
+			});
+
+	$("#btnAlterarParametroEmail").click(function() {
+				
+				if ($("#parametroEmailId").val() && $("#emailFrom").val() && $("#emailFromName").val() &&
+						$("#emailSmtpUsername").val() && $("#emailSmtpPassword").val() && $("#emailSmtpHost").val() && $("#emailPort").val()) {
+
+					$("#btnAlterarParametroEmail").attr("disabled", "disabled");
+
+					$.ajax({
+						type : 'POST',
+						url : 'alterarParametrosEmail',
+						data : {
+							"parametroEmailId" : $('#parametroEmailId').val(),
+							"emailFrom" : $('#emailFrom').val(),
+							"emailFromName" : $('#emailFromName').val(),
+							"emailSmtpUsername" : $('#emailSmtpUsername').val(),
+							"emailSmtpPassword" : $('#emailSmtpPassword').val(),
+							"emailSmtpHost" : $('#emailSmtpHost').val(),
+							"emailPort" : $('#emailPort').val(),
+							"emailSubject" : $('#emailSubject').val(),
+							"configSet" : $('#configSet').val(),
+							"urlEnvio" : $('#urlEnvio').val(),
+						},
+						success : function(data) {
+							location.reload();
+						},
+						error : function() {
+							alert("Ocorreu um erro ao alterar os dados.");
+							$("#btnAlterarParametro").attr("disabled",
+									false);
+						}
+					});
+
+				} else {
+					alert('Preencha o campo para prosseguir!');
+					$("#btnAlterarParametroEmail").attr("disabled", false);
+					return;
+				}
+			});
+	
+	$("#btnAlterarAmbiente").click(function() {
+
+		if ($("#tipoAmbienteId").val() && $("#nomeAmbiente").val()) {
+
+			$("#btnAlterarAmbiente").attr("disabled", "disabled");
+
+			$.ajax({
+				type : 'POST',
+				url : 'alterarAmbiente',
+				data : {
+					"tipoAmbienteId" : $('#tipoAmbienteId').val(),
+					"nomeAmbiente" : $('#nomeAmbiente').val(),
+				},
+				success : function(data) {
+					location.reload();
+				},
+				error : function() {
+					alert("Ocorreu um erro ao alterar os dados.");
+					$("#btnAlterarAmbiente").attr("disabled", false);
+				}
+			});
+
+		} else {
+			alert('Preencha o ambiente para prosseguir!');
+			return;
+		}
+	});
+
+	$("#btnAlterarProduto").click(function() {
+
+		if ($("#tipoProdutoId").val() && $("#nomeProduto").val()) {
+
+			$("#btnAlterarProduto").attr("disabled", "disabled");
+
+			$.ajax({
+				type : 'POST',
+				url : 'alterarProduto',
+				data : {
+					"tipoProdutoId" : $('#tipoProdutoId').val(),
+					"nomeProduto" : $('#nomeProduto').val(),
+				},
+				success : function(data) {
+					location.reload();
+				},
+				error : function() {
+					alert("Ocorreu um erro ao alterar os dados.");
+					$("#btnAlterarAmbiente").attr("disabled", false);
+				}
+			});
+
+		} else {
+			alert('Preencha o produto para prosseguir!');
+			return;
+		}
+	});
+	
+	$("#btnInserirProduto").click(function() {
+
+		if ($("#inserirNomeProduto").val()) {
+
+			$("#btnInserirProduto").attr("disabled", "disabled");
+
+			$.ajax({
+				type : 'POST',
+				url : 'inserirProduto',
+				data : {
+					"nomeProduto" : $('#inserirNomeProduto').val(),
+				},
+				success : function(data) {
+					location.reload();
+				},
+				error : function() {
+					alert("Ocorreu um erro ao alterar os dados.");
+					$("#btnAlterarAmbiente").attr("disabled", false);
+				}
+			});
+
+		} else {
+			alert('Preencha o produto para prosseguir!');
+			return;
+		}
+	});
+	
+	function handleInput(e) {
+		   var ss = e.target.selectionStart;
+		   var se = e.target.selectionEnd;
+		   e.target.value = e.target.value.toUpperCase();
+		   e.target.selectionStart = ss;
+		   e.target.selectionEnd = se;
+	}
+		
+</script>
+</body>
+<div th:replace="fragments/footer :: footer">&nbsp;</div>
+</html>

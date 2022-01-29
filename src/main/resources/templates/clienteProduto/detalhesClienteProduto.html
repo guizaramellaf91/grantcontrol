@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html xmlns:th="http://thymeleaf.org">
+<head>
+    <link rel="icon" th:href=@{../favicon.ico} type="image/x-icon"/>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"/>
+    <link type="text/css" rel="stylesheet" href="../css/materialize.min.css" media="screen,projection"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <meta charset="ISO-8859-1">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <title>GrantControl - Product Details</title>
+</head>
+<div th:replace="fragments/header :: header">&nbsp;</div>
+<body>
+<div class="container">
+    <br>
+    <a th:href="${(#mvc.url('CC#detalhesCliente').arg(0, cliente.clienteId)).build()}"
+       class="waves-effect waves-light blue lighten-1 btn-small"><i class="material-icons left">arrow_back</i>Back</a>
+    <a id="btnConectar" class="waves-effect waves-light blue lighten-1 btn-small"><i class="material-icons right">airplay</i>Connect
+        to Server</a>
+    <a id="btnExportarDados" th:href="@{'../exportarDadosProduto/' + ${clienteProdutoId}}"
+       class="waves-effect waves-light blue lighten-1 btn-small"><i class="material-icons right">archive</i>Export Data</a>
+    <br><br>
+    <form id="form" class="col s12" method="post">
+        <div class="row">
+            <input type="hidden" id="objClienteProduto" th:value="${clienteProduto}">
+            <input type="hidden" th:field="${clienteProduto.cliente.clienteId}"/>
+            <div class="input-field col s6">
+                <input style="font-size: 12px;" id="dataCadastro" name="nomeCliente"
+                       th:value="${#dates.format(clienteProduto.dataCadastro, 'dd/MM/yyyy HH:mm')}"
+                       type="text" required disabled> <label
+                    style="font-size: 12px;" for="dataCadastro">Registered in</label>
+            </div>
+            <div class="input-field col s3">
+                <input style="font-size: 12px;" id="dataAlteracao" name="nomeCliente"
+                       th:value="${#dates.format(clienteProduto.dataAlteracao, 'dd/MM/yyyy HH:mm')}"
+                       type="text" required disabled> <label
+                    style="font-size: 12px;" for="dataAlteracao">Changed in</label>
+            </div>
+            <div class="input-field col s3">
+                <input style="font-size: 12px; font-weight: bold;"
+                       id="usuarioAlteracao" name="usuarioAlteracao"
+                       th:value="${clienteProduto.usuarioAlteracao}" type="text"
+                       maxlength="30" disabled> <label style="font-size: 12px;"
+                                                       for="usuario">Changed by</label>
+            </div>
+            <div style="font-size: 12px;" class="input-field col s12">
+                <p style="font-size: 12px;">Client <input style="font-size: 12px; font-weight: bold;"
+                                                          id="nome" name="nomeCliente"
+                                                          th:value="${clienteProduto.cliente.nomeCliente}" type="text"
+                                                          required disabled></p>
+            </div>
+            <div style="font-size: 12px;" class="input-field col s4">
+                <input style="font-size: 12px; font-weight: bold;" id="descricao"
+                       name="descricao" th:value="${clienteProduto.descricao}"
+                       type="text" maxlength="80"
+                       th:readonly="${usuarioLogado.nivel != 1}" required> <label
+                    style="font-size: 12px;" for="descricao">Description</label>
+            </div>
+            <div class="input-field col s4">
+                <select style="font-size: 12px; font-weight: bold;"
+                        class="browser-default" id="tipoAmbienteId" name="tipoAmbienteId"
+                        th:disabled="${usuarioLogado.nivel != 1}" required>
+                    <option th:each="tipoAmbiente : ${lsTipoAmbiente}"
+                            th:value="${tipoAmbiente.tipoAmbienteId}"
+                            th:text="${tipoAmbiente.nomeAmbiente}"
+                            th:selected="${tipoAmbiente.tipoAmbienteId == clienteProduto.tipoAmbiente.tipoAmbienteId}"></option>
+                </select>
+            </div>
+            <div class="input-field col s4">
+                <select style="font-size: 12px; font-weight: bold;"
+                        class="browser-default" id="tipoProdutoId" name="tipoProdutoId"
+                        th:disabled="${usuarioLogado.nivel != 1}" required>
+                    <option th:each="tipoProduto : ${lsTipoProduto}"
+                            th:value="${tipoProduto.tipoProdutoId}"
+                            th:text="${tipoProduto.nomeProduto}"
+                            th:selected="${tipoProduto.tipoProdutoId == clienteProduto.tipoProduto.tipoProdutoId}"></option>
+                </select>
+            </div>
+            <div class="input-field col s12">
+                <input style="font-size: 12px; font-weight: bold;" id="endereco"
+                       name="endereco" th:value="${clienteProduto.ip}" type="text"
+                       maxlength="80" th:readonly="${usuarioLogado.nivel != 1}" required>
+                <label style="font-size: 12px;" for="endereco">IP address</label>
+            </div>
+            <div class="input-field col s3">
+                <input style="font-size: 12px; font-weight: bold;" id="usuario"
+                       name="usuario" th:value="${clienteProduto.usuario}" type="text"
+                       maxlength="30" th:readonly="${usuarioLogado.nivel != 1}" required>
+                <label style="font-size: 12px;" for="usuario">User</label>
+            </div>
+            <div class="input-field col s3">
+                <input style="font-size: 12px; font-weight: bold;" id="senha"
+                       name="senha" th:value="${clienteProduto.senha}" type="text"
+                       maxlength="30" th:readonly="${usuarioLogado.nivel != 1}" required>
+                <label style="font-size: 12px;" for="senha">Password</label>
+            </div>
+            <div class="input-field col s3">
+                <input style="font-size: 12px; font-weight: bold;" id="usuarioAux"
+                       name="usuarioAux" th:value="${clienteProduto.usuarioAux}"
+                       type="text" maxlength="30"
+                       th:readonly="${usuarioLogado.nivel != 1}"> <label
+                    style="font-size: 12px;" for="usuarioAux">User (Optional)</label>
+            </div>
+            <div class="input-field col s3">
+                <input style="font-size: 12px; font-weight: bold;" id="senhaAux"
+                       name="senhaAux" th:value="${clienteProduto.senhaAux}" type="text"
+                       maxlength="30" th:readonly="${usuarioLogado.nivel != 1}">
+                <label style="font-size: 12px;" for="senhaAux">Password (Optional)</label>
+            </div>
+            <div class="input-field col s3">
+                <input style="font-size: 12px; font-weight: bold;" id="porta"
+                       name="porta" th:value="${clienteProduto.porta}" type="number"
+                       min="1" max="99999999" th:readonly="${usuarioLogado.nivel != 1}"
+                       required> <label style="font-size: 12px;" for="porta">Port</label>
+            </div>
+            <div class="input-field col s4">
+                <i class="material-icons prefix">chevron_right</i> <input
+                    style="font-size: 12px; font-weight: bold;" id="urlAplicacao"
+                    name="urlAplicacao" th:value="${clienteProduto.urlAplicacao}"
+                    type="text" th:readonly="${usuarioLogado.nivel != 1}"> <label
+                    style="font-size: 12px;" for="urlAplicacao">
+                Application URL</label>
+            </div>
+            <div th:if="${statusURL eq 200}" class="input-field col s1">
+                <a th:href="${clienteProduto.urlAplicacao}" target="_blank"><i
+                        class="material-icons prefix">http</i></a>
+            </div>
+            <div th:unless="${statusURL eq 200}" class="input-field col s1">
+                <i class="small material-icons prefix">visibility_off</i>
+            </div>
+            <div class="input-field col s2">
+                <input style="font-size: 12px; font-weight: bold;"
+                       id="usuarioAplicacao" name="usuarioAplicacao"
+                       th:value="${clienteProduto.usuarioAplicacao}" type="text"
+                       maxlength="50" th:readonly="${usuarioLogado.nivel != 1}">
+                <label style="font-size: 12px;" for="usuarioAplicacao">User (Application)</label>
+            </div>
+            <div class="input-field col s2">
+                <input style="font-size: 12px; font-weight: bold;"
+                       id="senhaAplicacao" name="senhaAplicacao"
+                       th:value="${clienteProduto.senhaAplicacao}" type="text"
+                       maxlength="50" th:readonly="${usuarioLogado.nivel != 1}">
+                <label style="font-size: 12px;" for="senhaAplicacao">Password (Application)</label>
+            </div>
+            <div th:if="${usuarioLogado.nivel eq 1}" class="input-field col s2">
+                <label><input id="possuiChave" name="possuiChave" onclick="validCheck()" type="checkbox"
+                              class="filled-in"/>
+                    <span style="font-size: 10px;">Change authentication</span></label>
+            </div>
+            <div class="input-field col s2">
+                <input style="font-size: 12px; font-weight: bold; text-align: center;" id="nomeChave" name="nomeChave"
+                       th:value="${clienteProduto.nomeChave}" placeholder="Enter the key name. Ex: userssh"
+                       type="text">
+            </div>
+            <div class="input-field col s2">
+                <label th:if="${usuarioLogado.nivel eq 1 && possuiKey eq true}"
+                       style="font-size: 11px; text-align: center;"
+                       th:text="${alertMsg eq null ? clienteProduto.descricao + ' Has authentication key.' : 'Invalid Key! Review the key name!'}"></label>
+            </div>
+            <div class="input-field col s4">
+
+                <a th:if="${usuarioLogado.nivel eq 0 && possuiKey eq true}" href="#"
+                   th:text="'The server requires the following key: ' + ${keyName}" style="font-size: 12px;"
+                   class="waves-effect waves-light blue pulse lighten-1 btn-small" th:disabled="disabled"></a>
+
+                <a th:if="${usuarioLogado.nivel eq 1 && possuiKey eq true}" id="nameKey"
+                   th:href="@{'../downloadPrivateKey/' + ${clienteProdutoId}}" style="font-size: 10px;"
+                   class="btn waves-effect waves-light blue lighten-1" th:text="${clienteProduto.nomeChave} + '.ppk'"><i
+                        class="material-icons right">vpn_key</i></a>
+
+            </div>
+        </div>
+        <br>
+        <br>
+        <a th:if="${usuarioLogado.nivel eq 1}" style="font-size: 12px;" href="javascript:void(0);"
+           th:onclick="alterarCliente( [[${clienteProdutoId}]] );" class="btn waves-effect waves-light blue lighten-1">Change<i
+                class="material-icons right">save</i></a>
+
+        <a th:href="@{#modalDeletarClienteProduto}" style="font-size: 12px;"
+           class="btn waves-effect waves-light blue lighten-1 modal-trigger"
+           th:if="${usuarioLogado.nivel eq 1 && usuarioLogado.login eq 'admin'}"><i
+                class="material-icons right">delete</i>Delete</a>
+    </form>
+</div>
+
+<div id="modalDeletarClienteProduto" class="modal">
+    <div class="modal-content" align="center">
+        <h4>Product deletion</h4>
+        <p style="font-size: 14px;"
+           th:text="'Hey ' + ${usuarioLogado.nome} + ', really want to delete the record?'"></p>
+        <a id="btnDeletarProduto" class="modal-close waves-effect waves-green btn-flat">Yes</a>
+        <a class="modal-close waves-effect waves-red btn-flat">No</a>
+    </div>
+</div>
+
+<script type="text/javascript" src="../js/materialize.min.js"></script>
+<script>
+
+    var usuarioServidor;
+    var enderecoServidor;
+    var portaServidor;
+    var urlConectarSSH;
+
+    $(document).ready(function () {
+
+        $('.modal').modal();
+        $('.dropdown-trigger').dropdown();
+
+        validCheck();
+
+        var alertMsg = '[[${alertMsg}]]';
+        if (alertMsg != '') {
+            $('#nameKey').attr('disabled', 'disabled');
+        }
+
+        usuarioServidor = $('#usuario').val();
+        enderecoServidor = $('#endereco').val();
+        portaServidor = $('#porta').val();
+        urlConectarSSH = "ssh://" + usuarioServidor + "@" + enderecoServidor + "?port=" + portaServidor;
+
+        $('#btnConectar').attr("href", urlConectarSSH);
+    });
+
+    function alterarCliente(clienteProdutoId) {
+        $.ajax({
+            type: 'POST',
+            url: '../detalhesClienteProduto/' + clienteProdutoId,
+            data: {
+                'clienteProdutoId': clienteProdutoId,
+                'dataCadastro': $('#dataCadastro').val(),
+                'nomeCliente': $('#nomeCliente').val(),
+                'descricao': $('#descricao').val(),
+                'endereco': $('#endereco').val(),
+                'usuario': $('#usuario').val(),
+                'senha': $('#senha').val(),
+                'usuarioAux': $('#usuarioAux').val(),
+                'senhaAux': $('#senhaAux').val(),
+                'porta': $('#porta').val(),
+                'urlAplicacao': $('#urlAplicacao').val(),
+                'usuarioAplicacao': $('#usuarioAplicacao').val(),
+                'senhaAplicacao': $('#senhaAplicacao').val(),
+                'tipoAmbienteId': $('#tipoAmbienteId').val(),
+                'tipoProdutoId': $('#tipoProdutoId').val(),
+                'possuiChave': $('#possuiChave').val(),
+                'nomeChave': $('#nomeChave').val(),
+            },
+            success: function (response) {
+                location.reload();
+            },
+            error: function () {
+                alert('ocorreu um erro!');
+            }
+        });
+    }
+
+    $("#btnDeletarProduto").click(function () {
+
+        var clienteId = '[[${clienteProduto.cliente.clienteId}]]';
+
+        $.ajax({
+            type: 'GET',
+            contentType: "application/json; charset=utf-8",
+            url: '../deletarClienteProduto/' + '[[${clienteProdutoId}]]',
+            success: function (data) {
+                location.href = '../detalhesCliente/' + clienteId;
+            }
+        });
+    });
+
+    function goBack() {
+        window.history.back();
+    }
+
+    function validCheck() {
+        if ($('#possuiChave').prop('checked')) {
+            $('#nomeChave').show();
+        } else {
+            $('#nomeChave').hide();
+        }
+    }
+
+    $('#btnConectar').click(function () {
+
+        copyToClipboard($('#senha').val());
+
+        if (usuarioServidor == '-') {
+            alert('A conexao automatica esta habilitada somente para servidores que nao possuem chave privada de acesso. Em breve novas funcionalidades.');
+            return false;
+        }
+    });
+
+    function copyToClipboard(element) {
+
+        var aux = document.createElement("input");
+        aux.setAttribute("value", element);
+        document.body.appendChild(aux);
+        aux.select();
+        document.execCommand("copy");
+        document.body.removeChild(aux);
+    }
+
+</script>
+</body>
+<div th:replace="fragments/footer :: footer">&nbsp;</div>
+</html>

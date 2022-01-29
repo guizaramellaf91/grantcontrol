@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html xmlns:th="http://thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<head>
+<link rel="icon" th:href=@{favicon.ico} type="image/x-icon" />
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
+<link type="text/css" rel="stylesheet" href="css/materialize.min.css" media="screen,projection" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta charset="ISO-8859-1">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.18.1/moment.min.js"></script>
+<title>GrantControl - Controle de Vers&atilde;o</title>
+</head>
+<div th:replace="fragments/header :: header">&nbsp;</div>
+<body>
+<div class="container" align="center">
+<br>
+<a href="#modalCadastrarControleVersao" style="font-size: 10px;" class="waves-effect waves-light blue lighten-1 btn-small modal-trigger" th:if="${usuarioLogado.nivel eq 1}">
+<i class="material-icons left">layers</i>Cadastrar Vers&atilde;o</a>
+<input type="hidden" id="clienteId" th:value="${clienteId}">
+<br><br>
+<label style="font-weight: bold;">N&deg; Versionamento(s):</label> <label style="font-weight: bold;" th:text="${quantidadeVersionamento} + ' - ' + ${clienteNome}"></label>
+</div>
+<br>
+<form id="formBusca" action="buscarCliente" class="container" method="post">
+<input oninput="handleInput(event)" type="text" style="font-size: 12px; font-weight: bold; color: #737373;" id="nomeCliente" name="nomeCliente" placeholder="Digite a descri&ccedil;&atilde;o"/>
+<a onclick="buscarAgora()" style="font-size: 10px;" class="waves-effect waves-light blue lighten-1 btn"><i class="material-icons left">search</i>Buscar</a>
+<a th:href="clientes" style="font-size: 10px;" class="waves-effect waves-light blue lighten-1 btn"><i class="material-icons left">refresh</i>Limpar</a>
+</form>
+<br>
+<div align="center"><strong><label style="color: #b30000;" id="msg" th:text="${msg}"></label></strong></div>
+<br><br>
+<table class="container">
+<thead>
+<tr style="font-size: 12px;">
+<th>Tipo Produto</th>
+<th>Tipo Sub-produto</th>
+<th>Vers&atilde;o Homologa&ccedil;&atilde;o</th>
+<th>Vers&atilde;o Pr&eacute;-Produ&ccedil;&atilde;o</th>
+<th>Vers&atilde;o Produ&ccedil;&atilde;o</th>
+<th>Detalhes</th>
+</tr>
+</thead>
+<tbody style="font-size: 12px;">
+<tr th:each="controleVersaoCliente : ${lsControleVersaoCliente}">
+<td style="font-weight: bold;"><span th:text="${controleVersaoCliente.tipoProduto.nomeProduto}"></span></td>
+<td style="font-weight: bold;"><span th:text="${controleVersaoCliente.tipoSubProduto.nomeSubProduto}"></span></td>
+<td style="font-weight: bold;"><span th:text="${controleVersaoCliente.versaoHomologacao}"></span></td>
+<td style="font-weight: bold;"><span th:text="${controleVersaoCliente.versaoPreProducao}"></span></td>
+<td style="font-weight: bold;"><span th:text="${controleVersaoCliente.versaoProducao}"></span></td>
+<td><a href="javascript:void(0);" 
+th:onclick="showDetalhesVersao([[${controleVersaoCliente}]],[[${controleVersaoCliente.tipoProduto}]],[[${controleVersaoCliente.tipoSubProduto}]]);">
+<i class="small material-icons">fullscreen</i></a></td>
+</tr>
+</tbody>
+</table>
+<br><br>
+<div class="container">
+<a th:href="${(#mvc.url('CC#detalhesCliente').arg(0, clienteId)).build()}" style="font-size: 10px;" class="waves-effect waves-light blue lighten-1 btn-small">
+<i class="material-icons left">call_missed</i>Voltar ao Cliente</a>
+</div>
+<br>
+<div id="modalDadosControleVersao" class="modal">
+	<div class="modal-content" align="center">
+		<div class="row">
+		<input type="hidden" id="controleVersaoClienteId">
+		<div class="input-field col s2">
+		  <label style="font-size: 12px;">Cadastro Produto</label>
+		</div>
+		<div class="input-field col s4">
+          <input style="font-size: 12px; text-align:center;" type="text" id="dataCadastro" required disabled>
+        </div>
+        <div class="input-field col s2">
+		  <label style="font-size: 12px;">Altera&ccedil;&atilde;o Produto</label>
+		</div>
+        <div class="input-field col s4">
+          <input style="font-size: 12px; text-align:center;" type="text" id="dataAlteracao" required disabled>
+        </div>
+        <div class="input-field col s2">
+		  <label style="font-size: 12px;">Tipo do Sub-Produto</label>
+		</div>
+	    <div class="input-field col s4">
+          <input style="font-size: 14px; font-weight: bold; text-align:center;" type="text" id="tipoSubProduto" required disabled>
+        </div>
+        <div class="input-field col s2">
+		  <label style="font-size: 12px;">Tipo do Produto</label>
+		</div>
+	    <div class="input-field col s4">
+          <input style="font-size: 14px; font-weight: bold; text-align:center;" type="text" id="tipoProduto" required disabled>
+        </div>        
+        <div class="input-field col s2">
+		  <label style="font-size: 12px;">Vers&atilde;o Homologa&ccedil;&atilde;o</label>
+		</div>
+	    <div class="input-field col s4">
+          <input style="font-size: 12px; font-weight: bold; text-align:center;" type="text" id="versaoHomologacao" required>
+        </div>
+        <div class="input-field col s2">
+		  <label style="font-size: 12px;">Alterado em</label>
+		</div>
+	    <div class="input-field col s4">
+          <input style="font-size: 14px; font-weight: bold; text-align:center;" type="text" id="dataAlteracaoVersaoHomologacao" required disabled>
+        </div>
+        <div class="input-field col s2">
+		  <label style="font-size: 12px;">Vers&atilde;o Pr&eacute;-Produ&ccedil;&atilde;o</label>
+		</div>
+        <div class="input-field col s4">
+          <input style="font-size: 12px; font-weight: bold; text-align:center;" type="text" id="versaoPreProducao" required>
+        </div>
+        <div class="input-field col s2">
+		  <label style="font-size: 12px;">Alterado em</label>
+		</div>
+	    <div class="input-field col s4">
+          <input style="font-size: 14px; font-weight: bold; text-align:center;" type="text" id="dataAlteracaoVersaoPreProducao" required disabled>
+        </div>
+        <div class="input-field col s2">
+		  <label style="font-size: 12px;">Vers&atilde;o Produ&ccedil;&atilde;o</label>
+		</div>
+        <div class="input-field col s4">
+          <input style="font-size: 12px; font-weight: bold; text-align:center;" type="text" id="versaoProducao" required>
+        </div>
+        <div class="input-field col s2">
+		  <label style="font-size: 12px;">Alterado em</label>
+		</div>
+	    <div class="input-field col s4">
+          <input style="font-size: 14px; font-weight: bold; text-align:center;" type="text" id="dataAlteracaoVersaoProducao" required disabled>
+        </div>    
+  	    </div>
+  	    <a id="btnAlterarDadosVersao" style="font-size: 9px;" class="waves-effect waves-light blue lighten-1 btn-small"><i class="material-icons left">save</i>ALTERAR</a>
+  	    <a id="btnDeletarDadosVersao" style="font-size: 9px;" class="waves-effect waves-light blue lighten-1 btn-small"><i class="material-icons left">delete_forever</i>DELETAR</a>
+	</div>
+</div>
+<div id="modalCadastrarControleVersao" class="modal">
+	<div class="modal-content" align="center">
+		<div class="row">
+		<div class="input-field col s6">
+	     <select class="browser-default" id="inserirTipoProduto" required>
+ 			<option disabled selected>Selecione o tipo do produto</option>
+ 			<option th:each="tipoProduto : ${lsTipoProduto}" 
+ 			th:value="${tipoProduto.tipoProdutoId}" th:text="${tipoProduto.nomeProduto}"></option>
+		</select>
+		<div class="input-field col s12"></div>        
+		</div>
+		<div class="input-field col s6">
+	     <select class="browser-default" id="inserirTipoSubProduto" required>
+	     <option disabled selected>Selecione o sub-produto</option>
+	     </select>
+		<div class="input-field col s12"></div>        
+		</div>
+        <div class="input-field col s2">
+		  <label style="font-size: 12px;">Vers&atilde;o Homologa&ccedil;&atilde;o</label>
+		</div>
+	    <div class="input-field col s10">
+          <input style="font-size: 12px; font-weight: bold; text-align:center;" type="text" id="InserirVersaoHomologacao" required>
+        </div>
+        <div class="input-field col s2">
+		  <label style="font-size: 12px;">Vers&atilde;o Pr&eacute;-Produ&ccedil;&atilde;o</label>
+		</div>
+        <div class="input-field col s10">
+          <input style="font-size: 12px; font-weight: bold; text-align:center;" type="text" id="InserirVersaoPreProducao" required>
+        </div>
+        <div class="input-field col s2">
+		  <label style="font-size: 12px;">Vers&atilde;o Produ&ccedil;&atilde;o</label>
+		</div>
+        <div class="input-field col s10">
+          <input style="font-size: 12px; font-weight: bold; text-align:center;" type="text" id="InserirVersaoProducao" required>
+        </div>
+  	    </div>
+  	    <a id="btnInserirControleVersao" style="font-size: 9px;" class="waves-effect waves-light blue lighten-1 btn-small"><i class="material-icons left">save</i>Inserir</a>
+	</div>
+</div>
+<div class="container" align="center">
+	<div th:if="${searchVersao ne true && lsControleVersaoCliente.totalPages != 1}">
+		<ul class="pagination">
+			<li th:class="${lsControleVersaoCliente.number == 0} ? disabled"><a
+				class="pageLink"
+				th:href="@{/controleVersaoCliente(pageSize=${selectedPageSize}, page=1)}">&laquo;</a>
+			</li>
+			<li th:class="${lsControleVersaoCliente.number == 0} ? disabled"><a
+				class="pageLink"
+				th:href="@{/controleVersaoCliente(pageSize=${selectedPageSize}, page=${lsControleVersaoCliente.number})}">&larr;</a>
+			</li>
+			<li
+				th:class="${lsControleVersaoCliente.number == (page - 1)} ? 'active pointer-disabled'"
+				th:each="page : ${#numbers.sequence(pager.startPage, pager.endPage)}">
+				<a class="pageLink"
+				th:href="@{/controleVersaoCliente(pageSize=${selectedPageSize}, page=${page})}"
+				th:text="${page}"></a>
+			</li>
+			<li
+				th:class="${lsControleVersaoCliente.number + 1 == lsControleVersaoCliente.totalPages} ? disabled">
+				<a class="pageLink"
+				th:href="@{/controleVersaoCliente(pageSize=${selectedPageSize}, page=${lsControleVersaoCliente.number + 2})}">&rarr;</a>
+			</li>
+			<li
+				th:class="${lsControleVersaoCliente.number + 1 == lsControleVersaoCliente.totalPages} ? disabled">
+				<a class="pageLink"
+				th:href="@{/controleVersaoCliente(pageSize=${selectedPageSize}, page=${lsControleVersaoCliente.totalPages})}">&raquo;</a>
+			</li>
+		</ul>
+	</div>
+</div>
+<script type="text/javascript" src="js/materialize.min.js"></script>
+<script>
+$(document).ready(function(){
+	$('.modal').modal();
+	$('.dropdown-trigger').dropdown();
+	$('select').formSelect();
+	changePageAndSize();
+});
+
+function buscarAgora() {
+	document.getElementById("formBusca").submit();
+}
+
+function showDetalhesVersao(controleVersao, tipoProduto, tipoSubProduto) {
+	
+	$('#controleVersaoClienteId').val(controleVersao.controleVersaoClienteId);
+	$('#dataCadastro').val(moment(controleVersao.dataCadastro).format('DD/MM/YYYY HH:mm:ss'));
+	$('#dataAlteracao').val(moment(controleVersao.dataAlteracao).format('DD/MM/YYYY HH:mm:ss'));
+	$('#tipoSubProduto').val(tipoSubProduto.nomeSubProduto);
+	$('#tipoProduto').val(tipoProduto.nomeProduto);
+	$('#versaoHomologacao').val(controleVersao.versaoHomologacao);
+	$('#dataAlteracaoVersaoHomologacao').val(moment(controleVersao.dataAlteracaoVersaoHomologacao).format('DD/MM/YYYY HH:mm:ss'));
+	$('#versaoPreProducao').val(controleVersao.versaoPreProducao);
+	$('#dataAlteracaoVersaoPreProducao').val(moment(controleVersao.dataAlteracaoVersaoPreProducao).format('DD/MM/YYYY HH:mm:ss'));
+	$('#versaoProducao').val(controleVersao.versaoProducao);
+	$('#dataAlteracaoVersaoProducao').val(moment(controleVersao.dataAlteracaoVersaoProducao).format('DD/MM/YYYY HH:mm:ss'));
+	$('#modalDadosControleVersao').modal('open');
+}
+
+$('#inserirTipoProduto').on("change", function() {
+
+	var selectbox = $('#inserirTipoSubProduto');
+		
+	$.ajax({
+		type : 'GET',
+		url : 'buscarSubProduto',
+		data : {
+			"tipoProdutoId" : $('#inserirTipoProduto').val()
+		},
+		success : function(data) {
+					
+			$('#inserirTipoSubProduto').find('option').remove().end().append(data);
+			
+			$.each(data, function (i, d) {
+	              selectbox.append('<option value="' + d.tipoSubProdutoId+ '">' + d.nomeSubProduto + '</option>');
+	        });
+		}
+	});
+});
+
+$('#btnAlterarDadosVersao').click(function() {
+	
+	$.ajax({
+		type : 'POST',
+		url : 'alterarControleVersaoCliente',
+		data : {
+			'clienteId' : $('#clienteId').val(),
+			'controleVersaoClienteId' : $('#controleVersaoClienteId').val(),
+			'versaoHomologacao' : $('#versaoHomologacao').val(),
+			'versaoPreProducao' : $('#versaoPreProducao').val(),
+			'versaoProducao' : $('#versaoProducao').val(),
+		},
+		success : function(response) {
+			location.reload();
+		},
+		error : function() {
+			alert('ocorreu um erro!');
+		}
+	});
+});
+
+$('#btnInserirControleVersao').click(function() {
+		
+	$.ajax({
+		type : 'POST',
+		url : 'cadastrarControleVersaoCliente',
+		data : {
+			'clienteId' : $('#clienteId').val(),
+			'tipoSubProdutoId' : $('#inserirTipoSubProduto').val(),
+			'tipoProdutoId' : $('#inserirTipoProduto').val(),
+			'versaoHomologacao' : $('#InserirVersaoHomologacao').val(),
+			'versaoPreProducao' : $('#InserirVersaoPreProducao').val(),
+			'versaoProducao' : $('#InserirVersaoProducao').val(),
+		},
+		success : function(response) {
+			location.reload();
+		},
+		error : function() {
+			alert('ocorreu um erro!');
+		}
+	});
+});
+
+$('#btnDeletarDadosVersao').click(function() {
+	
+	$.ajax({
+		type : 'POST',
+		url : 'deletarControleVersaoCliente',
+		data : {
+			'clienteId' : $('#clienteId').val(),
+			'controleVersaoClienteId' : $('#controleVersaoClienteId').val(),
+		},
+		success : function(response) {
+			location.reload();
+		},
+		error : function() {
+			alert('ocorreu um erro!');
+		}
+	});
+});
+
+function handleInput(e) {
+	   var ss = e.target.selectionStart;
+	   var se = e.target.selectionEnd;
+	   e.target.value = e.target.value.toUpperCase();
+	   e.target.selectionStart = ss;
+	   e.target.selectionEnd = se;
+}
+
+</script>
+<script th:inline="javascript">
+	/*<![CDATA[*/
+	function changePageAndSize() {
+		$('#pageSizeSelect').change(function(evt) {window.location.replace("/grantcontrol/controleVersaoCliente?pageSize=" + this.value + "&page=1");});}
+	/*]]>*/
+</script>
+</body>
+<div th:replace="fragments/footer :: footer">&nbsp;</div>
+</html>

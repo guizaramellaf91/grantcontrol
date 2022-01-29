@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html xmlns:th="http://thymeleaf.org">
+<head>
+    <link rel="icon" th:href=@{../favicon.ico} type="image/x-icon"/>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"/>
+    <link type="text/css" rel="stylesheet" href="../css/materialize.min.css" media="screen,projection"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <meta charset="ISO-8859-1">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <title>GrantControl - Client's data</title>
+</head>
+<div th:replace="fragments/header :: header">&nbsp;</div>
+<body>
+<div th:each="cliente : ${cliente}" class="container">
+    <br>
+    <a th:if="${usuarioLogado.login != null}"
+       th:href="@{/clientes?pageSize={1}&page={2}(1=${pageSizeNavi},2=${pageNavi})}"
+       class="waves-effect waves-light blue lighten-1 btn-small"><i class="material-icons left">arrow_back</i>Back</a>
+    <a th:unless="${usuarioLogado.login != null}" th:href=@{/clientes}
+       class="waves-effect waves-light blue lighten-1 btn-small"><i class="material-icons left">arrow_back</i>Back</a>
+    <br><br>
+    <form id="formDetalhesCliente" class="col s12" method="post">
+        <div class="row">
+            <input type="hidden" th:field="${cliente.clienteId}"/>
+            <div class="input-field col s4">
+                <input oninput="handleInput(event)" style="font-size: 12px; font-weight: bold;" id="nome"
+                       name="nomeCliente" th:value="${cliente.nomeCliente}" type="text" class="validate"
+                       th:disabled="${usuarioLogado.nivel == 0}" required>
+                <label for="nome">Name</label>
+            </div>
+            <div class="input-field col s2">
+                <input style="font-size: 12px; font-weight: bold;" id="quantidadeProduto" name="quantidadeProduto"
+                       th:value="${quantidadeProduto}" type="text" class="validate" disabled>
+                <label for="quantidadeProduto">Items</label>
+            </div>
+            <div class="input-field col s3">
+                <input style="font-size: 12px;" id="dataCadastro" name="dataCadastro"
+                       th:value="${#dates.format(cliente.dataCadastro, 'dd/MM/yyyy HH:mm')}" type="text"
+                       class="validate" required disabled>
+                <label for="dataCadastro">Registration date</label>
+            </div>
+            <div class="input-field col s3">
+                <input style="font-size: 12px;" id="dataAlteracao" name="nomeCliente"
+                       th:value="${#dates.format(cliente.dataAlteracao, 'dd/MM/yyyy HH:mm')}" type="text"
+                       class="validate" required disabled>
+                <label for="dataAlteracao">Modification date</label>
+            </div>
+            <br>
+            <div style="font-size: 12px;" class="switch">
+                <input type="hidden" id="ativo" name="ativo" value="true">
+            </div>
+            <br>
+            <div class="row">
+                <div class="col s12">
+                    <ul class="tabs">
+                        <li class="tab col s2"><a class="active" href="#tabLinuxServers">Linux Servers
+                            ([[${clienteProdutoLinuxServer.size()}]])</a></li>
+                        <li class="tab col s2"><a href="#tabWindowsServers">Windows Servers
+                            ([[${clienteProdutoWindowsServer.size()}]])</a></li>
+                        <li class="tab col s2"><a href="#tabDatabasesOracle">Databases Oracle
+                            ([[${clienteProdutoDatabaseOracle.size()}]])</a></li>
+                        <li class="tab col s2"><a href="#tabDatabasesMysql">Databases MySQL
+                            ([[${clienteProdutoDatabaseMysql.size()}]])</a></li>
+                    </ul>
+                </div>
+                <div id="tabLinuxServers" class="col s12">
+                    <br>
+                    <table class="responsive-table" style="font-size: 11px; overflow: auto;">
+                        <thead>
+                        <tr>
+                            <th>Description</th>
+                            <th>IP address</th>
+                            <th>Connect</th>
+                            <th>Type</th>
+                            <th>Details</th>
+                            <th th:if="${usuarioLogado.nivel == 1 && usuarioLogado.login == 'admin'}">Delete</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="clienteProduto : ${clienteProdutoLinuxServer}">
+                            <td><span th:text="${clienteProduto.descricao}">Descri&ccedil;&atilde;o</span></td>
+                            <td><span th:text="${clienteProduto.ip}">IP</span></td>
+                            <td><a href="javascript:void(0)"
+                                   th:onclick="conectarServidor([[${clienteProduto.usuario}]],[[${clienteProduto.senha}]],[[${clienteProduto.ip}]],[[${clienteProduto.porta}]]);"><i
+                                    class="material-icons left">slideshow</i></a></td>
+                            <td><span th:text="${clienteProduto.tipoProduto.nomeProduto}">Tipo</span></td>
+                            <td>
+                                <a th:href="${(#mvc.url('CPC#detalhesClienteProduto').arg(0, clienteProduto.clienteProdutoId)).build()}"><i
+                                        class="small material-icons tooltipped"
+                                        th:data-tooltip="'Servidor:  ' + ${clienteProduto.ip} + '<br>'
+	       	            			   + 'Porta:  ' + ${clienteProduto.porta} + '<br>'
+	       	            			   + 'Usu&aacute;rio:  ' + ${clienteProduto.usuario} + '<br>'
+	       	            			   + 'Senha:  ' + ${clienteProduto.senha} + '<br>'
+	       	            			   ">desktop_windows</i></a></td>
+                            <td th:if="${usuarioLogado.nivel eq 1 && usuarioLogado.login eq 'admin'}"><a
+                                    th:href="${(#mvc.url('CPC#deletarClienteProduto').arg(0, clienteProduto.clienteProdutoId)).build()}"><i
+                                    class="small material-icons">delete</i></a></td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div id="tabWindowsServers" class="col s12">
+                    <br>
+                    <table class="responsive-table" style="font-size: 11px; overflow: auto;">
+                        <thead>
+                        <tr>
+                            <th>Description</th>
+                            <th>IP address</th>
+                            <th>Connect</th>
+                            <th>Type</th>
+                            <th>Details</th>
+                            <th th:if="${usuarioLogado.nivel == 1 && usuarioLogado.login == 'admin'}">Delete</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="clienteProduto : ${clienteProdutoWindowsServer}">
+                            <td><span th:text="${clienteProduto.descricao}">Descri&ccedil;&atilde;o</span></td>
+                            <td><span th:text="${clienteProduto.ip}">IP</span></td>
+                            <td><a href="javascript:void(0)"
+                                   th:onclick="conectarServidor([[${clienteProduto.usuario}]],[[${clienteProduto.senha}]],[[${clienteProduto.ip}]],[[${clienteProduto.porta}]]);"><i
+                                    class="material-icons left">slideshow</i></a></td>
+                            <td><span th:text="${clienteProduto.tipoProduto.nomeProduto}">Tipo</span></td>
+                            <td>
+                                <a th:href="${(#mvc.url('CPC#detalhesClienteProduto').arg(0, clienteProduto.clienteProdutoId)).build()}"><i
+                                        class="small material-icons tooltipped"
+                                        th:data-tooltip="'Servidor:  ' + ${clienteProduto.ip} + '<br>'
+	       	            			   + 'Porta:  ' + ${clienteProduto.porta} + '<br>'
+	       	            			   + 'Usu&aacute;rio:  ' + ${clienteProduto.usuario} + '<br>'
+	       	            			   + 'Senha:  ' + ${clienteProduto.senha} + '<br>'
+	       	            			   ">desktop_windows</i></a></td>
+                            <td th:if="${usuarioLogado.nivel eq 1 && usuarioLogado.login eq 'admin'}"><a
+                                    th:href="${(#mvc.url('CPC#deletarClienteProduto').arg(0, clienteProduto.clienteProdutoId)).build()}"><i
+                                    class="small material-icons">delete</i></a></td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div id="tabDatabasesOracle" class="col s12">
+                    <br>
+                    <table class="responsive-table" style="font-size: 11px; overflow: auto;">
+                        <thead>
+                        <tr>
+                            <th>Description</th>
+                            <th>IP address</th>
+                            <th>Connect</th>
+                            <th>Type</th>
+                            <th>Details</th>
+                            <th th:if="${usuarioLogado.nivel == 1 && usuarioLogado.login == 'admin'}">Delete</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="clienteProduto : ${clienteProdutoDatabaseOracle}">
+                            <td><span th:text="${clienteProduto.descricao}">Descri&ccedil;&atilde;o</span></td>
+                            <td><span th:text="${clienteProduto.ip}">IP</span></td>
+                            <td><a href="javascript:void(0)"
+                                   th:onclick="conectarServidor([[${clienteProduto.usuario}]],[[${clienteProduto.senha}]],[[${clienteProduto.ip}]],[[${clienteProduto.porta}]]);"><i
+                                    class="material-icons left">slideshow</i></a></td>
+                            <td><span th:text="${clienteProduto.tipoProduto.nomeProduto}">Tipo</span></td>
+                            <td>
+                                <a th:href="${(#mvc.url('CPC#detalhesClienteProduto').arg(0, clienteProduto.clienteProdutoId)).build()}"><i
+                                        class="small material-icons tooltipped"
+                                        th:data-tooltip="'Server:  ' + ${clienteProduto.ip} + '<br>'
+	       	            			   + 'Port:  ' + ${clienteProduto.porta} + '<br>'
+	       	            			   + 'User:  ' + ${clienteProduto.usuario} + '<br>'
+	       	            			   + 'Password:  ' + ${clienteProduto.senha} + '<br>'
+	       	            			   ">desktop_windows</i></a></td>
+                            <td th:if="${usuarioLogado.nivel eq 1 && usuarioLogado.login eq 'admin'}"><a
+                                    th:href="${(#mvc.url('CPC#deletarClienteProduto').arg(0, clienteProduto.clienteProdutoId)).build()}"><i
+                                    class="small material-icons">delete</i></a></td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div id="tabDatabasesMysql" class="col s12">
+                    <br>
+                    <table class="responsive-table" style="font-size: 11px; overflow: auto;">
+                        <thead>
+                        <tr>
+                            <th>Description</th>
+                            <th>IP address</th>
+                            <th>Connect</th>
+                            <th>Type</th>
+                            <th>Details</th>
+                            <th th:if="${usuarioLogado.nivel == 1 && usuarioLogado.login == 'admin'}">Delete</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="clienteProduto : ${clienteProdutoDatabaseMysql}">
+                            <td><span th:text="${clienteProduto.descricao}">Descri&ccedil;&atilde;o</span></td>
+                            <td><span th:text="${clienteProduto.ip}">IP</span></td>
+                            <td><a href="javascript:void(0)"
+                                   th:onclick="conectarServidor([[${clienteProduto.usuario}]],[[${clienteProduto.senha}]],[[${clienteProduto.ip}]],[[${clienteProduto.porta}]]);"><i
+                                    class="material-icons left">slideshow</i></a></td>
+                            <td><span th:text="${clienteProduto.tipoProduto.nomeProduto}">Tipo</span></td>
+                            <td>
+                                <a th:href="${(#mvc.url('CPC#detalhesClienteProduto').arg(0, clienteProduto.clienteProdutoId)).build()}"><i
+                                        class="small material-icons tooltipped"
+                                        th:data-tooltip="'Servidor:  ' + ${clienteProduto.ip} + '<br>'
+	       	            			   + 'Porta:  ' + ${clienteProduto.porta} + '<br>'
+	       	            			   + 'Usu&aacute;rio:  ' + ${clienteProduto.usuario} + '<br>'
+	       	            			   + 'Senha:  ' + ${clienteProduto.senha} + '<br>'
+	       	            			   ">desktop_windows</i></a></td>
+                            <td th:if="${usuarioLogado.nivel eq 1 && usuarioLogado.login eq 'admin'}"><a
+                                    th:href="${(#mvc.url('CPC#deletarClienteProduto').arg(0, clienteProduto.clienteProdutoId)).build()}"><i
+                                    class="small material-icons">delete</i></a></td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <label th:if="${isControleVersaoCliente}" style="font-size: 11px;"><i
+                    class="material-icons left">beenhere</i>[[${cliente.nomeCliente}]] possui controle de vers&atilde;o!</label>
+            <br><br>
+            <a id="btnSubmit" th:href="@{#modalDetalhesCliente}" th:if="${usuarioLogado.nivel eq 1}"
+               class="waves-effect waves-light blue lighten-1 btn-small modal-trigger"><i class="material-icons left">save</i>Change</a>
+            <a th:href="@{'../cadastrarClienteProduto/' + ${cliente.clienteId}}" th:if="${usuarioLogado.nivel == 1}"
+               class="waves-effect waves-light blue lighten-1 btn-small"><i class="material-icons left">add_circle_outline</i>New
+                product</a>
+            <a th:if="${usuarioLogado.nivel eq 1 && usuarioLogado.departamento eq 'GERAL'}"
+               th:href="${(#mvc.url('CVCC#controleVersaoCliente').arg(0, cliente.clienteId)).build()}"
+               class="waves-effect waves-light blue lighten-1 btn-small modal-trigger"><i class="material-icons left">equalizer</i>Version
+                Control</a>
+            <a th:if="${usuarioLogado.nivel eq 1 && usuarioLogado.login eq 'admin'}" th:href="@{#modalDeletarCliente}"
+               class="waves-effect waves-light blue lighten-1 btn-small modal-trigger"><i class="material-icons left">delete</i>Delete</a>
+        </div>
+    </form>
+</div>
+
+<div id="modalDetalhesCliente" class="modal">
+    <div class="modal-content" align="center">
+        <h4>Altera&ccedil;&atilde;o de Cliente</h4>
+        <p style="font-size: 14px;"
+           th:text="'Ol&aacute; ' + ${usuarioLogado.nome} + ', deseja realmente alterar o registro?'"></p>
+        <a id="btnAlterar" class="modal-close waves-effect waves-green btn-flat">Sim</a>
+        <a class="modal-close waves-effect waves-red btn-flat">N&atilde;o</a>
+    </div>
+</div>
+
+<div id="modalDeletarCliente" class="modal">
+    <div class="modal-content" align="center">
+        <h4>Delete customer</h4>
+        <p style="font-size: 14px;"
+           th:text="'Hey ' + ${usuarioLogado.nome} + ', do you really want to delete the record?'"></p>
+        <a id="btnDeletar" class="modal-close waves-effect waves-green btn-flat">Yes</a>
+        <a class="modal-close waves-effect waves-red btn-flat">No</a>
+    </div>
+</div>
+
+<script type="text/javascript" src="../js/materialize.min.js"></script>
+<script>
+    $(document).ready(function () {
+
+        $('.tabs').tabs();
+        $('.modal').modal();
+        $('.dropdown-trigger').dropdown();
+        $('.tooltipped').tooltip();
+    });
+</script>
+<script>
+
+    function conectarServidor(usuario, senha, endereco, porta) {
+
+        if (usuario == '-') {
+            alert('A conexao automatica esta habilitada somente para servidores que nao possuem chave privada de acesso. Em breve novas funcionalidades.');
+        } else {
+            copyToClipboard(senha);
+            var urlConectarSSH = "ssh://" + usuario + "@" + endereco + "?port=" + porta;
+            location.href = urlConectarSSH;
+        }
+    }
+
+    function copyToClipboard(element) {
+
+        var aux = document.createElement("input");
+        aux.setAttribute("value", element);
+        document.body.appendChild(aux);
+        aux.select();
+        document.execCommand("copy");
+        document.body.removeChild(aux);
+    }
+
+    $("#btnAlterar").click(function () {
+        $('#formDetalhesCliente').submit();
+    });
+
+    $("#btnDeletar").click(function () {
+        $.ajax({
+            type: 'GET',
+            contentType: "application/json; charset=utf-8",
+            url: '../deletarCliente/' + $('#clienteId').val(),
+            success: function (data) {
+                location.href = "../clientes";
+            }
+        });
+    });
+
+    function handleInput(e) {
+        var ss = e.target.selectionStart;
+        var se = e.target.selectionEnd;
+        e.target.value = e.target.value.toUpperCase();
+        e.target.selectionStart = ss;
+        e.target.selectionEnd = se;
+    }
+
+</script>
+</body>
+<div th:replace="fragments/footer :: footer">&nbsp;</div>
+</html>
